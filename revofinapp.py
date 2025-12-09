@@ -13,23 +13,37 @@ def load_data():
     try:
         df_cohort_metrics = pd.read_csv('cohort_metrics.csv')
         df_high_risk_cohort = pd.read_csv('high_risk_cohort.csv')
-        df_other_cohorts = pd.read_csv('other_cohorts.csv')
+        
+        # Load pre-calculated summary files for other_cohorts
+        other_home_ownership_dist = pd.read_csv('other_cohorts_home_ownership_dist.csv')
+        other_emp_length_dist = pd.read_csv('other_cohorts_emp_length_dist.csv')
+        other_addr_state_dist_top5 = pd.read_csv('other_cohorts_addr_state_dist_top5.csv')
+        other_purpose_dist_top5 = pd.read_csv('other_cohorts_purpose_dist_top5.csv')
+        other_annual_inc_desc = pd.read_csv('other_cohorts_annual_inc_desc.csv')
+        other_int_rate_desc = pd.read_csv('other_cohorts_int_rate_desc.csv')
         
         # Ensure 'issue_date' is datetime for proper sorting and plotting
         df_cohort_metrics['issue_date'] = pd.to_datetime(df_cohort_metrics['issue_date'], format='%m-%Y')
         df_cohort_metrics = df_cohort_metrics.sort_values(by='issue_date').reset_index(drop=True)
         
-        return df_cohort_metrics, df_high_risk_cohort, df_other_cohorts
+        return df_cohort_metrics, df_high_risk_cohort, \
+               other_home_ownership_dist, other_emp_length_dist, \
+               other_addr_state_dist_top5, other_purpose_dist_top5, \
+               other_annual_inc_desc, other_int_rate_desc
+               
     except FileNotFoundError:
-        st.error("One or more CSV files not found. Please ensure 'cohort_metrics.csv', 'high_risk_cohort.csv', and 'other_cohorts.csv' are in the same directory.")
-        return None, None, None
+        st.error("One or more CSV files not found. Please ensure all required CSVs are in the same directory.")
+        return None, None, None, None, None, None, None, None
 
 # 4. In the main part of the Streamlit app:
 
 st.title('RevoFin Loan Portfolio Analysis')
 st.write("Exploring loan portfolio trends and comparing a high-risk cohort (04-2014) with other cohorts.")
 
-df_cohort_metrics, df_high_risk_cohort, df_other_cohorts = load_data()
+df_cohort_metrics, df_high_risk_cohort, \
+other_home_ownership_dist, other_emp_length_dist, \
+other_addr_state_dist_top5, other_purpose_dist_top5, \
+other_annual_inc_desc, other_int_rate_desc = load_data()
 
 if df_cohort_metrics is not None:
     # c. Display a section for 'TKB30 Trend Over Time'
@@ -58,36 +72,45 @@ if df_cohort_metrics is not None:
     st.header('High-Risk Cohort (04-2014) vs. Other Cohorts Comparison')
     st.write("Here's a detailed comparison of loan and customer attributes between the high-risk cohort (04-2014) and all other cohorts.")
 
-    if df_high_risk_cohort is not None and df_other_cohorts is not None:
+    if df_high_risk_cohort is not None and other_home_ownership_dist is not None:
         # f. For categorical comparisons
-        categorical_cols = ['home_ownership', 'emp_length', 'addr_state', 'purpose']
-        for col in categorical_cols:
-            st.subheader(f'Distribution of {col.replace("_", " ").title()}')
+        categorical_cols_data = {
+            'home_ownership': {'HighRisk': df_high_risk_cohort['home_ownership'].value_counts(normalize=True).reset_index(),
+                               'Other': other_home_ownership_dist},
+            'emp_length': {'HighRisk': df_high_risk_cohort['emp_length'].value_counts(normalize=True).reset_index(),
+                           'Other': other_emp_length_dist},
+            'addr_state': {'HighRisk': df_high_risk_cohort['addr_state'].value_counts(normalize=True).head(5).reset_index(),
+                           'Other': other_addr_state_dist_top5},
+            'purpose': {'HighRisk': df_high_risk_cohort['purpose'].value_counts(normalize=True).head(5).reset_index(),
+                        'Other': other_purpose_dist_top5}
+        }
+
+        for col_name, data_dict in categorical_cols_data.items():
+            st.subheader(f'Distribution of {col_name.replace("_", " ").title()}')
             col1, col2 = st.columns(2)
             with col1:
-                st.write(f'**High-Risk Cohort (04-2014) - {col.replace("_", " ").title()}**')
-                if col in ['addr_state', 'purpose']:
-                    st.dataframe(df_high_risk_cohort[col].value_counts(normalize=True).head(5))
-                else:
-                    st.dataframe(df_high_risk_cohort[col].value_counts(normalize=True))
+                st.write(f'**High-Risk Cohort (04-2014) - {col_name.replace("_", " ").title()}**')
+                st.dataframe(data_dict['HighRisk'])
             with col2:
-                st.write(f'**Other Cohorts - {col.replace("_", " ").title()}**')
-                if col in ['addr_state', 'purpose']:
-                    st.dataframe(df_other_cohorts[col].value_counts(normalize=True).head(5))
-                else:
-                    st.dataframe(df_other_cohorts[col].value_counts(normalize=True))
+                st.write(f'**Other Cohorts - {col_name.replace("_", " ").title()}**')
+                st.dataframe(data_dict['Other'])
 
         # g. For numerical comparisons
-        numerical_cols = ['annual_inc', 'int_rate']
-        for col in numerical_cols:
-            st.subheader(f'Descriptive Statistics of {col.replace("_", " ").title()}')
+        numerical_cols_data = {
+            'annual_inc': {'HighRisk': df_high_risk_cohort['annual_inc'].describe().reset_index(),
+                           'Other': other_annual_inc_desc},
+            'int_rate': {'HighRisk': df_high_risk_cohort['int_rate'].describe().reset_index(),
+                         'Other': other_int_rate_desc}
+        }
+        for col_name, data_dict in numerical_cols_data.items():
+            st.subheader(f'Descriptive Statistics of {col_name.replace("_", " ").title()}')
             col1, col2 = st.columns(2)
             with col1:
-                st.write(f'**High-Risk Cohort (04-2014) - {col.replace("_", " ").title()}**')
-                st.dataframe(df_high_risk_cohort[col].describe())
+                st.write(f'**High-Risk Cohort (04-2014) - {col_name.replace("_", " ").title()}**')
+                st.dataframe(data_dict['HighRisk'])
             with col2:
-                st.write(f'**Other Cohorts - {col.replace("_", " ").title()}**')
-                st.dataframe(df_other_cohorts[col].describe())
+                st.write(f'**Other Cohorts - {col_name.replace("_", " ").title()}**')
+                st.dataframe(data_dict['Other'])
 
     # h. Add a final section to summarize the findings
     st.header('Summary of Anomaly Cohort (04-2014) Characteristics')
@@ -101,7 +124,7 @@ if df_cohort_metrics is not None:
 
     2.  **Employment Length (`emp_length`):** The high-risk cohort shows a slightly higher percentage of borrowers with `10+ years` of employment (35.42% vs. 32.54%), but a lower representation of very short employment lengths (`< 1 year` is 6.25% vs 9.72%). Experience alone does not mitigate risk in this cohort.
 
-    3.  **Annual Income (`annual_inc`):** The mean annual income in the high-risk cohort is lower (\$74,094.31) than in other cohorts (\$81,094.02), with a less diverse income range (lower standard deviation).
+    3.  **Annual Income (`annual_inc`):** The mean annual income in the high-risk cohort is lower ($74,094.31) than in other cohorts ($81,094.02), with a less diverse income range (lower standard deviation).
 
     4.  **Interest Rate (`int_rate`):** The high-risk cohort has a notably higher mean interest rate (0.1611) compared to other cohorts (0.1293), suggesting these loans were perceived as higher risk during underwriting.
 
@@ -113,4 +136,3 @@ if df_cohort_metrics is not None:
 
     The '04-2014' high-risk cohort tends to consist of borrowers with slightly lower average annual incomes, higher interest rates, and a more pronounced focus on debt consolidation and credit card refinancing purposes. These factors, combined with specific home ownership and employment length distributions, suggest that these borrowers might have had higher initial risk profiles or were subject to less stringent lending criteria, leading to the observed lower TKB30.
     """)
-    
