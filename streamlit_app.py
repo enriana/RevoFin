@@ -15,7 +15,7 @@ def load_data():
     try:
         df_cohort_metrics = pd.read_csv('cohort_metrics.csv')
         df_high_risk_cohort = pd.read_csv('high_risk_cohort.csv')
-        
+
         # Load pre-calculated summary files for other_cohorts
         other_home_ownership_dist = pd.read_csv('other_cohorts_home_ownership_dist.csv')
         other_emp_length_dist = pd.read_csv('other_cohorts_emp_length_dist.csv')
@@ -27,10 +27,7 @@ def load_data():
         # Ensure 'issue_date' is datetime for proper sorting and plotting
         df_cohort_metrics['issue_date'] = pd.to_datetime(df_cohort_metrics['issue_date'], format='%m-%Y')
         df_cohort_metrics = df_cohort_metrics.sort_values(by='issue_date').reset_index(drop=True)
-        
-        # We no longer load df_other_cohorts raw data here to avoid large file issues with GitHub
-        # Numerical comparisons will rely solely on descriptive statistics CSVs
-        
+
         return df_cohort_metrics, df_high_risk_cohort, \
                other_home_ownership_dist, other_emp_length_dist, \
                other_addr_state_dist_top5, other_purpose_dist_top5, \
