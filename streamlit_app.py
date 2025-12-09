@@ -15,7 +15,7 @@ def load_data():
     try:
         df_cohort_metrics = pd.read_csv('cohort_metrics.csv')
         df_high_risk_cohort = pd.read_csv('high_risk_cohort.csv')
-
+        
         # Load pre-calculated summary files for other_cohorts
         other_home_ownership_dist = pd.read_csv('other_cohorts_home_ownership_dist.csv')
         other_emp_length_dist = pd.read_csv('other_cohorts_emp_length_dist.csv')
@@ -27,7 +27,7 @@ def load_data():
         # Ensure 'issue_date' is datetime for proper sorting and plotting
         df_cohort_metrics['issue_date'] = pd.to_datetime(df_cohort_metrics['issue_date'], format='%m-%Y')
         df_cohort_metrics = df_cohort_metrics.sort_values(by='issue_date').reset_index(drop=True)
-
+        
         return df_cohort_metrics, df_high_risk_cohort, \
                other_home_ownership_dist, other_emp_length_dist, \
                other_addr_state_dist_top5, other_purpose_dist_top5, \
@@ -128,24 +128,8 @@ if df_cohort_metrics is not None:
                 plt.tight_layout()
                 st.pyplot(fig)
 
-        # g. For numerical comparisons (displaying descriptive statistics tables)
-        st.subheader("Numerical Comparisons (Descriptive Statistics)")
-        st.info("Box plots for numerical comparisons are not displayed as raw 'other_cohorts.csv' is not loaded. Displaying descriptive statistics in table format instead.")
-        numerical_cols_desc_data = {
-            'annual_inc': {'HighRisk': df_high_risk_cohort['annual_inc'].describe().reset_index(),
-                           'Other': other_annual_inc_desc},
-            'int_rate': {'HighRisk': df_high_risk_cohort['int_rate'].describe().reset_index(),
-                         'Other': other_int_rate_desc}
-        }
-        for col_name, data_dict in numerical_cols_desc_data.items():
-            st.subheader(f'Descriptive Statistics of {col_name.replace("_", " ").title()}')
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write(f'**High-Risk Cohort (04-2014) - {col_name.replace("_", " ").title()}**')
-                st.dataframe(data_dict['HighRisk'])
-            with col2:
-                st.write(f'**Other Cohorts - {col_name.replace("_", " ").title()}**')
-                st.dataframe(data_dict['Other'])
+        # g. For numerical comparisons (Descriptive Statistics) - Now only in Summary
+        # Removed explicit display of tables here as requested.
 
     # h. Add a final section to summarize the findings
     st.header('3. Summary of Anomaly Cohort (04-2014) Characteristics')
