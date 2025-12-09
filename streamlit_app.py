@@ -23,10 +23,13 @@ def load_data():
         other_purpose_dist_top5 = pd.read_csv('other_cohorts_purpose_dist_top5.csv')
         other_annual_inc_desc = pd.read_csv('other_cohorts_annual_inc_desc.csv')
         other_int_rate_desc = pd.read_csv('other_cohorts_int_rate_desc.csv')
-        
+
         # Ensure 'issue_date' is datetime for proper sorting and plotting
         df_cohort_metrics['issue_date'] = pd.to_datetime(df_cohort_metrics['issue_date'], format='%m-%Y')
         df_cohort_metrics = df_cohort_metrics.sort_values(by='issue_date').reset_index(drop=True)
+        
+        # We no longer load df_other_cohorts raw data here to avoid large file issues with GitHub
+        # Numerical comparisons will rely solely on descriptive statistics CSVs
         
         return df_cohort_metrics, df_high_risk_cohort, \
                other_home_ownership_dist, other_emp_length_dist, \
@@ -35,6 +38,7 @@ def load_data():
                
     except FileNotFoundError:
         st.error("One or more CSV files not found. Please ensure all required CSVs are in the same directory.")
+        # Return None for all expected dataframes if any file is missing
         return None, None, None, None, None, None, None, None
 
 # 4. In the main part of the Streamlit app:
@@ -119,7 +123,6 @@ if df_cohort_metrics is not None:
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 plt.tight_layout()
                 st.pyplot(fig)
-                #st.dataframe(data_dict['HighRisk'])
             with col2:
                 st.write(f'**Other Cohorts - {col_name.replace("_", " ").title()}**')
                 fig, ax = plt.subplots(figsize=(6, 4))
@@ -127,41 +130,31 @@ if df_cohort_metrics is not None:
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
                 plt.tight_layout()
                 st.pyplot(fig)
-                #st.dataframe(data_dict['Other'])
 
-        # g. For numerical comparisons (using box plots)
-        numerical_cols_data = {
-            'annual_inc': {'HighRisk': df_high_risk_cohort['annual_inc'],
-                           'Other': df_other_cohorts['annual_inc']},
-            'int_rate': {'HighRisk': df_high_risk_cohort['int_rate'],
-                         'Other': df_other_cohorts['int_rate']}
+        # g. For numerical comparisons (displaying descriptive statistics tables)
+        st.subheader("Numerical Comparisons (Descriptive Statistics)")
+        st.info("Box plots for numerical comparisons are not displayed as raw 'other_cohorts.csv' is not loaded. Displaying descriptive statistics in table format instead.")
+        numerical_cols_desc_data = {
+            'annual_inc': {'HighRisk': df_high_risk_cohort['annual_inc'].describe().reset_index(),
+                           'Other': other_annual_inc_desc},
+            'int_rate': {'HighRisk': df_high_risk_cohort['int_rate'].describe().reset_index(),
+                         'Other': other_int_rate_desc}
         }
-        for col_name, data_dict in numerical_cols_data.items():
-            st.subheader(f'Distribution of {col_name.replace("_", " ").title()}')
+        for col_name, data_dict in numerical_cols_desc_data.items():
+            st.subheader(f'Descriptive Statistics of {col_name.replace("_", " ").title()}')
             col1, col2 = st.columns(2)
             with col1:
                 st.write(f'**High-Risk Cohort (04-2014) - {col_name.replace("_", " ").title()}**')
-                fig, ax = plt.subplots(figsize=(6, 4))
-                sns.boxplot(y=data_dict['HighRisk'], ax=ax, palette='viridis')
-                ax.set_ylabel(col_name.replace("_", " ").title())
-                plt.tight_layout()
-                st.pyplot(fig)
-                #st.dataframe(data_dict['HighRisk'].describe().reset_index())
+                st.dataframe(data_dict['HighRisk'])
             with col2:
                 st.write(f'**Other Cohorts - {col_name.replace("_", " ").title()}**')
-                fig, ax = plt.subplots(figsize=(6, 4))
-                sns.boxplot(y=data_dict['Other'], ax=ax, palette='viridis')
-                ax.set_ylabel(col_name.replace("_", " ").title())
-                plt.tight_layout()
-                st.pyplot(fig)
-                #st.dataframe(data_dict['Other'].describe().reset_index())
+                st.dataframe(data_dict['Other'])
 
     # h. Add a final section to summarize the findings
     st.header('3. Summary of Anomaly Cohort (04-2014) Characteristics')
     st.markdown("""
     Based on the detailed comparisons, the '04-2014' cohort, identified as a high-risk cohort due to its lowest TKB30,
-    exhibits several distinguishing characteristics compared to 'df_other_cohorts' (all other cohorts).
-
+    exhibits several distinguishing characteristics compared to 'df_other_cohorts' (all other cohorts).\n
     #### Key Differences:\n
     1.  **Home Ownership:** The high-risk cohort has a higher proportion of borrowers with `MORTGAGE` (60.12% vs. 48.93%) and a lower proportion with `RENT` (33.04% vs. 39.14%). This suggests a potential difference in financial stability indicators.\n
     2.  **Employment Length (`emp_length`):** The high-risk cohort shows a slightly higher percentage of borrowers with `10+ years` of employment (35.42% vs. 32.54%), but a lower representation of very short employment lengths (`< 1 year` is 6.25% vs 9.72%). Experience alone does not mitigate risk in this cohort.\n
@@ -171,3 +164,5 @@ if df_cohort_metrics is not None:
     6.  **Purpose (`purpose`):** There's a higher concentration in `debt_consolidation` (60.42% vs. 55.14%) and `credit_card` (26.49% vs. 24.57%) in the high-risk cohort, reinforcing these as key drivers of higher risk.\n
     #### Overall Characterization:\n
     The '04-2014' high-risk cohort tends to consist of borrowers with slightly lower average annual incomes, higher interest rates, and a more pronounced focus on debt consolidation and credit card refinancing purposes. These factors, combined with specific home ownership and employment length distributions, suggest that these borrowers might have had higher initial risk profiles or were subject to less stringent lending criteria, leading to the observed lower TKB30.\n    """)
+
+```
