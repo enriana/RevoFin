@@ -164,5 +164,3 @@ if df_cohort_metrics is not None:
     6.  **Purpose (`purpose`):** There's a higher concentration in `debt_consolidation` (60.42% vs. 55.14%) and `credit_card` (26.49% vs. 24.57%) in the high-risk cohort, reinforcing these as key drivers of higher risk.\n
     #### Overall Characterization:\n
     The '04-2014' high-risk cohort tends to consist of borrowers with slightly lower average annual incomes, higher interest rates, and a more pronounced focus on debt consolidation and credit card refinancing purposes. These factors, combined with specific home ownership and employment length distributions, suggest that these borrowers might have had higher initial risk profiles or were subject to less stringent lending criteria, leading to the observed lower TKB30.\n    """)
-
-```
