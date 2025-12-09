@@ -1,5 +1,3 @@
-# streamlit_app.py
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -53,8 +51,10 @@ if df_cohort_metrics is not None:
     ax_tkb30.set_title('TKB30 Trend Over Time')
     ax_tkb30.set_xlabel('Issue Date')
     ax_tkb30.set_ylabel('TKB30')
-    ax_tkb30.tick_params(axis='x', rotation=45, ha='right')
+    # Corrected line for x-axis tick labels
+    ax_tkb30.set_xticklabels(ax_tkb30.get_xticklabels(), rotation=45, ha='right') 
     ax_tkb30.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout() # Added for better layout
     st.pyplot(fig_tkb30)
 
     # d. Display a section for 'Outstanding Amount (OS) Trend Over Time'
@@ -64,8 +64,10 @@ if df_cohort_metrics is not None:
     ax_os.set_title('Outstanding Amount (OS) Trend Over Time')
     ax_os.set_xlabel('Issue Date')
     ax_os.set_ylabel('Outstanding Amount (OS)')
-    ax_os.tick_params(axis='x', rotation=45, ha='right')
+    # Corrected line for x-axis tick labels
+    ax_os.set_xticklabels(ax_os.get_xticklabels(), rotation=45, ha='right') 
     ax_os.grid(True, linestyle='--', alpha=0.7)
+    plt.tight_layout() # Added for better layout
     st.pyplot(fig_os)
 
     # e. Create an interactive comparison section
