@@ -162,14 +162,21 @@ if df_cohort_metrics is not None:
     Based on the detailed comparisons, the '04-2014' cohort, identified as a high-risk cohort due to its lowest TKB30,
     exhibits several distinguishing characteristics compared to 'df_other_cohorts' (all other cohorts).
 
-    #### Key Differences:\n
-    1.  **Home Ownership:** The high-risk cohort has a higher proportion of borrowers with `MORTGAGE` (60.12% vs. 48.93%) and a lower proportion with `RENT` (33.04% vs. 39.14%). This suggests a potential difference in financial stability indicators.\n
-    2.  **Employment Length (`emp_length`):** The high-risk cohort shows a slightly higher percentage of borrowers with `10+ years` of employment (35.42% vs. 32.54%), but a lower representation of very short employment lengths (`< 1 year` is 6.25% vs 9.72%). Experience alone does not mitigate risk in this cohort.\n
-    3.  **Annual Income (`annual_inc`):** The mean annual income in the high-risk cohort is lower ($74,094.31) than in other cohorts ($81,094.02), with a less diverse income range (lower standard deviation).\n
-    4.  **Interest Rate (`int_rate`):** The high-risk cohort has a notably higher mean interest rate (0.1611) compared to other cohorts (0.1293), suggesting these loans were perceived as higher risk during underwriting.\n
-    5.  **Address State (`addr_state`):** While top states are consistent, there are minor percentage shifts. For instance, Illinois (IL) is notably higher in the high-risk cohort (6.25% vs 4.11%) indicating potential regional risk concentrations.\n
-    6.  **Purpose (`purpose`):** There's a higher concentration in `debt_consolidation` (60.42% vs. 55.14%) and `credit_card` (26.49% vs. 24.57%) in the high-risk cohort, reinforcing these as key drivers of higher risk.\n
-    #### Overall Characterization:\n
-    The '04-2014' high-risk cohort tends to consist of borrowers with slightly lower average annual incomes, higher interest rates, and a more pronounced focus on debt consolidation and credit card refinancing purposes. These factors, combined with specific home ownership and employment length distributions, suggest that these borrowers might have had higher initial risk profiles or were subject to less stringent lending criteria, leading to the observed lower TKB30.\n    """)
+    #### Key Differences:
 
+    1.  **Home Ownership:** The high-risk cohort has a higher proportion of borrowers with `MORTGAGE` (60.12% vs. 48.93%) and a lower proportion with `RENT` (33.04% vs. 39.14%). This suggests a potential difference in financial stability indicators.
 
+    2.  **Employment Length (`emp_length`):** The high-risk cohort shows a slightly higher percentage of borrowers with `10+ years` of employment (35.42% vs. 32.54%), but a lower representation of very short employment lengths (`< 1 year` is 6.25% vs 9.72%). Experience alone does not mitigate risk in this cohort.
+
+    3.  **Annual Income (`annual_inc`):** The mean annual income in the high-risk cohort is lower ($74,094.31) than in other cohorts ($81,094.02), with a less diverse income range (lower standard deviation).
+
+    4.  **Interest Rate (`int_rate`):** The high-risk cohort has a notably higher mean interest rate (0.1611) compared to other cohorts (0.1293), suggesting these loans were perceived as higher risk during underwriting.
+
+    5.  **Address State (`addr_state`):** While top states are consistent, there are minor percentage shifts. For instance, Illinois (IL) is notably higher in the high-risk cohort (6.25% vs 4.11%) indicating potential regional risk concentrations.
+
+    6.  **Purpose (`purpose`):** There's a higher concentration in `debt_consolidation` (60.42% vs. 55.14%) and `credit_card` (26.49% vs. 24.57%) in the high-risk cohort, reinforcing these as key drivers of higher risk.
+
+    #### Overall Characterization:
+
+    The '04-2014' high-risk cohort tends to consist of borrowers with slightly lower average annual incomes, higher interest rates, and a more pronounced focus on debt consolidation and credit card refinancing purposes. These factors, combined with specific home ownership and employment length distributions, suggest that these borrowers might have had higher initial risk profiles or were subject to less stringent lending criteria, leading to the observed lower TKB30.
+    """)
